@@ -16,6 +16,7 @@
 package com.example.android.pets;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -25,9 +26,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -40,6 +43,7 @@ import java.util.List;
  */
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String LOG_TAG = "CatalogActivity.java";
     private static final int PET_LOADER = 0;
     PetCursorAdapter petAdapter;
 
@@ -65,6 +69,19 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // There is no pet data yet (until the loader finishes) so pass in null for the Cursor.
         petAdapter = new PetCursorAdapter(this, null);
         petListView.setAdapter(petAdapter);
+
+        //Add onClick listener to
+        petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                //Create intent of EditorActivity
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+                Log.i(LOG_TAG, "Uri: " + ContentUris.withAppendedId(PetEntry.CONTENT_URI, id));
+                intent.setData(ContentUris.withAppendedId(PetEntry.CONTENT_URI, id));
+                startActivity(intent);
+            }
+        });
+
         //kick off the loader
         getLoaderManager().initLoader(PET_LOADER, null, this);
 
